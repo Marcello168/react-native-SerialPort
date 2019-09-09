@@ -1,4 +1,4 @@
-package com.dlc.serialportlib;
+package com.reactlibrary.serialportlib;
 
 
 import android.os.SystemClock;

@@ -1,4 +1,4 @@
-package com.dlc.serialportlib;
+package com.reactlibrary.serialportlib;
 import android.os.HandlerThread;
 import android.serialport.SerialPort;
 import java.io.File;
