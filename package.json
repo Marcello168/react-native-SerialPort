@@ -10,6 +10,15 @@
   "keywords": [
     "react-native"
   ],
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/Marcello168/react-native-SerialPort"
+  },
+  "bugs": {
+      "url": "https://github.com/Marcello168/react-native-SerialPort/issues"
+  },
+  "homepage": "https://github.com/Marcello168/react-native-SerialPort#readme",
+
   "author": "",
   "license": "",
   "peerDependencies": {
