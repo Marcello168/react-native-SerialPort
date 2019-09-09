@@ -12,12 +12,11 @@ buildscript {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
@@ -30,7 +29,19 @@ repositories {
     mavenCentral()
 }
 
+allprojects {
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+
 dependencies {
     compile 'com.facebook.react:react-native:+'
+    implementation 'com.github.licheedev.Android-SerialPort-API:serialport:1.0.1'
+
 }
   
