@@ -32,7 +32,7 @@ export default class App extends Component {
   }
 
   sendSerialPortData() {
-    SerialPortManager.writeByteData([0x00, 0x00, 0x00, 0x01])
+    SerialPortManager.writeByteData('/dev/ttyS7', [0x00, 0x00, 0x00, 0x01])
   }
 
 }

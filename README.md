@@ -22,7 +22,7 @@
             }
       maven { url 'https://jitpack.io' }
       }
-	}
+    }
    ```
 
    5. 在AndraidMainifest.xml 文件中 将  ` android:allowBackup="false"` 改成`android:allowBackup="true"`
@@ -55,7 +55,7 @@ import RNSerialPort from 'react-native-serial-port';
 
 // TODO: 获取设备的路径列表
  RNSerialPort.getAllDevicesPath((result) => {
-                console.log(result); 
+                console.log(result);
             });
 ```
 
@@ -70,7 +70,7 @@ RNSerialPort.openSerialPort('/dev/ttySO', 9600);
 import RNSerialPort from 'react-native-serial-port';
 let byteData = [0x00,0x01,0x02,0x03,0x05]
 // TODO: 发送数据
-RNSerialPort.sendByteData(byteData);
+RNSerialPort.sendByteData('/dev/ttyS7', byteData);
 ```
 
 3. 监听串口的状态 和 监听串口回传数据
@@ -78,7 +78,7 @@ RNSerialPort.sendByteData(byteData);
 import RNSerialPort from 'react-native-serial-port';
      DeviceEventEmitter.addListener('onSerialPortRecevieData', this.onSerialPortRecevieData, this)
     //监听接收串口开关的状态
-	DeviceEventEmitter.addListener('onSerialPortOpenStatus'，this.onSerialPortOpenStatus, this)
+    DeviceEventEmitter.addListener('onSerialPortOpenStatus'，this.onSerialPortOpenStatus, this)
 
 
 	    //监听串口的状态
@@ -86,8 +86,8 @@ import RNSerialPort from 'react-native-serial-port';
         alert(status)
         console.log("onSerialPortOpenStatus");
         //处理逻辑
-	}
-	
+    }
+
     // 监听串口回传数据
     onSerialPortRecevieData(receiveData) {
         console.log(receiveData);
