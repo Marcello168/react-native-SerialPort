@@ -87,19 +87,17 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
     if ( isSucess){
       //打开串口成功
       this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(onSerialPortOpenStatus,true);
-      WritableArray testArray = Arguments.createArray();
-      testArray.pushInt(23);
-      testArray.pushInt(15);
-      testArray.pushInt(48);
-      reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(onSerialPortRecevieData,testArray);
+
       manager.setReceiveCallback(new ReceiveCallback() {
         @Override
         public void onReceive(String devicePath, String baudrateString, byte[] received, int size) {
           WritableArray receiveArray = Arguments.createArray();
           for (int i = 0; i < size; i++) {
-            int cmdSingle = received[i];
-            receiveArray.pushInt(cmdSingle);
+            byte cmdSingle = received[i];
+            int singleInt = cmdSingle & 0xFF;
+            receiveArray.pushInt(singleInt);
           }
+          Log.d("BBC", "receiveArray: " +     receiveArray.toString());
           reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(onSerialPortRecevieData,receiveArray);
 
         }
