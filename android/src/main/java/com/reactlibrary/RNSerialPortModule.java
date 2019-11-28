@@ -24,7 +24,7 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
   private static final String onSerialPortRecevieData  = "onSerialPortRecevieData";//判断串口是否打开成功通知
 
   private DLCSerialPortUtil portutil;
-  private ArrayList<SerialPortManager> mPortManagers = new ArrayList<>();
+  SerialPortManager PortManager;
 
 
 
@@ -57,6 +57,7 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getAllDevicesPath(Callback callback) {
     String[] paths = DLCSerialPortUtil.getInstance().getAllDevicesPath();
+    String[] arr1 = {"aasfdas","fsdfs","fsfdssss","sdfsfsfs","sdfsfdsfdsf"};
     // .回调RN,即将处理串口列表返回给RN
 //    Toast.makeText(this.reactContext ,result,Toast.LENGTH_SHORT).show();
     WritableArray pathArray = Arguments.createArray();
@@ -76,14 +77,8 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public  void openSerialPort(String portStr,String Baudrates ){
-    for (SerialPortManager portManager : mPortManagers) {
-        String devicePath = portManager.getDevicePath();
-        if (devicePath != null && portStr.equals(devicePath)) {
-          return;
-        }
-      }
-
     SerialPortManager manager = DLCSerialPortUtil.getInstance().open(portStr,Baudrates);
+    PortManager = manager;//串口单例
     if (manager == null){
       this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(onSerialPortOpenStatus,false);
       return;
@@ -92,54 +87,39 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
     if ( isSucess){
       //打开串口成功
       this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(onSerialPortOpenStatus,true);
-      manager.setReceiveCallback(mPortManagerCallback);
-      mPortManagers.add(manager);
+
+      manager.setReceiveCallback(new ReceiveCallback() {
+        @Override
+        public void onReceive(String devicePath, String baudrateString, byte[] received, int size) {
+          WritableArray receiveArray = Arguments.createArray();
+          for (int i = 0; i < size; i++) {
+            byte cmdSingle = received[i];
+            int singleInt = cmdSingle & 0xFF;
+            receiveArray.pushInt(singleInt);
+          }
+          Log.d("BBC", "receiveArray: " +     receiveArray.toString());
+          reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(onSerialPortRecevieData,receiveArray);
+
+        }
+      });
+
     }else {
       //打开串口失败
       this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(onSerialPortOpenStatus,false);
 
     }
 
-
   }
 
 
-
-
-
- private ReceiveCallback mPortManagerCallback = new ReceiveCallback() {
-    @Override
-    public void onReceive(String devicePath, String baudrateString, byte[] received, int size) {
-      WritableMap params = Arguments.createMap();
-      WritableArray receiveArray = Arguments.createArray();
-      for (int i = 0; i < size; i++) {
-          byte cmdSingle = received[i];
-          int singleInt = cmdSingle & 0xFF;
-          receiveArray.pushInt(singleInt);
-      }
-      params.putString("linuxDevPath", devicePath);
-      params.putArray("valueArray", receiveArray);
-      reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(onSerialPortRecevieData, params);
-    }
-  };
-
-  private SerialPortManager pickPortManager(String portStr) {
-    for (SerialPortManager portManager : mPortManagers) {
-      String devicePath = portManager.getDevicePath();
-      if (devicePath != null && portStr.equals(devicePath)) {
-        return portManager;
-      }
-    }
-    return null;
-  }
-   /**
+  /**
    * 发送byte 字节 方式
    * rn调用Native,
    * @param msg
    *
    */
   @ReactMethod
-  public void sendByteData(String portStr, ReadableArray msg) throws Exception {
+  public void sendByteData(ReadableArray msg) throws Exception {
     Log.d("BBC", "BBC: " +     msg.toString());
     int length = msg.size();
     byte [] cmd = new byte [length];
@@ -147,10 +127,7 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
       int number =  msg.getInt(i);
       cmd[i] =(byte)number ;
     }
-    SerialPortManager pickedPortManager = pickPortManager(portStr);
-    if (pickedPortManager != null) {
-      pickedPortManager.removeReceiveCallback();
-    }
+    PortManager.sendData(cmd);
   }
 
   /**
@@ -160,11 +137,8 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
    *
    */
   @ReactMethod
-  public void removeReceiveCallback(String portStr) {
-    SerialPortManager pickedPortManager = pickPortManager(portStr);
-    if (pickedPortManager != null) {
-      pickedPortManager.removeReceiveCallback();
-    }
+  public void removeReceiveCallback(){
+    PortManager.removeReceiveCallback();
   }
 
 
@@ -175,30 +149,8 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
    *
    */
   @ReactMethod
-  public void close(String portStr) {
-    SerialPortManager pickedPortManager = pickPortManager(portStr);
-    if (pickedPortManager != null) {
-      pickedPortManager.removeReceiveCallback();
-      pickedPortManager.close();
-      mPortManagers.remove(pickedPortManager);
-    }
-  }
+  public void close() {
+    PortManager.close();
 
-  @ReactMethod
-  public void doDestroy() {
-    for (SerialPortManager portManager : mPortManagers) {
-      String devicePath = portManager.getDevicePath();
-      if (devicePath != null) {
-        portManager.removeReceiveCallback();
-        portManager.close();
-        mPortManagers.remove(portManager);
-      }
-    }
-  }
-
-  @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
-    this.doDestroy();
   }
 }
