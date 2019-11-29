@@ -1,0 +1,17 @@
+imgs/
+src/
+node_modules/
+.vscode/
+android/
+ios/
+example/
+.babelrc
+.cnpmrc
+.gitignore
+log4js.json
+tsconfig.json
+tslint.json
+.npmignore
+.npmrc
+.yarnrc
+**/*.log
