@@ -93,6 +93,7 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
     boolean isSucess = manager.isOpenSuccess();
     if ( isSucess){
       //打开串口成功
+      Log.d("BBC", "openSerialPort success");
       this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(onSerialPortOpenStatus,true);
       WritableArray testArray = Arguments.createArray();
       testArray.pushInt(23);
@@ -103,6 +104,7 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
       mPortManagers.add(manager);
     }else {
       //打开串口失败
+      Log.d("BBC", "openSerialPort failure");
       this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(onSerialPortOpenStatus,false);
 
     }
@@ -151,7 +153,7 @@ public class RNSerialPortModule extends ReactContextBaseJavaModule {
     }
     SerialPortManager pickedPortManager = pickPortManager(portStr);
     if (pickedPortManager != null) {
-      pickedPortManager.removeReceiveCallback();
+      pickedPortManager.sendData(cmd);
     }
   }
 
