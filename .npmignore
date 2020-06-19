@@ -2,7 +2,6 @@ imgs/
 src/
 node_modules/
 .vscode/
-android/
 ios/
 example/
 .babelrc
