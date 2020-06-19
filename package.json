@@ -1,5 +1,5 @@
 {
-  "name": "@koimy/react-native-serial-port",
+  "name": "react-native-serial-port",
   "version": "1.0.4",
   "description": "",
   "main": "index.js",
