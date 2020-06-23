@@ -4,6 +4,7 @@ def safeExtGet(prop, fallback) {
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
 
@@ -31,16 +32,20 @@ android {
 
 repositories {
     mavenCentral()
-}
-
-allprojects {
-    repositories {
-        flatDir {
-            dirs 'libs'
-        }
-        maven { url 'https://jitpack.io' }
+    maven {
+        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+        url "$rootDir/../node_modules/react-native/android"
     }
 }
+
+// allprojects {
+//     repositories {
+//         flatDir {
+//             dirs 'libs'
+//         }
+//         maven { url 'https://jitpack.io' }
+//     }
+// }
 
 
 dependencies {
